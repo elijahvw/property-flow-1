@@ -36,11 +36,14 @@ export default function Index() {
                 Streamline Your Property Management
               </h1>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                PropertyFlow combines powerful property management tools with AI-powered document analysis to help landlords manage properties, screen tenants, and collect rent—all in one platform.
+                PropertyFlow combines powerful property management tools with
+                AI-powered document analysis to help landlords manage
+                properties, screen tenants, and collect rent—all in one
+                platform.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Button 
+                <Button
                   size="lg"
                   onClick={() => handleDemoLogin("landlord")}
                   className="bg-primary hover:bg-primary/90"
@@ -48,7 +51,7 @@ export default function Index() {
                   I'm a Landlord
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
-                <Button 
+                <Button
                   size="lg"
                   variant="outline"
                   onClick={() => handleDemoLogin("tenant")}
@@ -89,7 +92,8 @@ export default function Index() {
               Powerful Features for Modern Property Management
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to manage properties efficiently and make data-driven decisions.
+              Everything you need to manage properties efficiently and make
+              data-driven decisions.
             </p>
           </div>
 
@@ -99,9 +103,12 @@ export default function Index() {
               <div className="w-12 h-12 bg-ai/20 rounded-lg flex items-center justify-center mb-4">
                 <Shield className="w-6 h-6 text-ai" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">Property Management</h3>
+              <h3 className="font-semibold text-foreground mb-2">
+                Property Management
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Manage multiple properties, track maintenance requests, and monitor occupancy.
+                Manage multiple properties, track maintenance requests, and
+                monitor occupancy.
               </p>
             </div>
 
@@ -110,9 +117,12 @@ export default function Index() {
               <div className="w-12 h-12 bg-ai/20 rounded-lg flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-ai" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">Rent Collection</h3>
+              <h3 className="font-semibold text-foreground mb-2">
+                Rent Collection
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Automate rent collection, track payments, and manage late fees with ease.
+                Automate rent collection, track payments, and manage late fees
+                with ease.
               </p>
             </div>
 
@@ -121,9 +131,12 @@ export default function Index() {
               <div className="w-12 h-12 bg-ai/20 rounded-lg flex items-center justify-center mb-4">
                 <BarChart3 className="w-6 h-6 text-ai" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">Analytics & Reports</h3>
+              <h3 className="font-semibold text-foreground mb-2">
+                Analytics & Reports
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Get insights into property performance and tenant metrics with detailed reports.
+                Get insights into property performance and tenant metrics with
+                detailed reports.
               </p>
             </div>
 
@@ -132,9 +145,12 @@ export default function Index() {
               <div className="w-12 h-12 bg-ai/20 rounded-lg flex items-center justify-center mb-4">
                 <Brain className="w-6 h-6 text-ai" />
               </div>
-              <h3 className="font-semibold text-foreground mb-2">AI Document Analysis</h3>
+              <h3 className="font-semibold text-foreground mb-2">
+                AI Document Analysis
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Upload leases and documents for intelligent analysis and key insights.
+                Upload leases and documents for intelligent analysis and key
+                insights.
               </p>
             </div>
           </div>
@@ -152,18 +168,25 @@ export default function Index() {
                     <Brain className="w-4 h-4" />
                     <span className="text-sm font-medium">AI-Powered</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-foreground">Document Intelligence</h3>
+                  <h3 className="text-2xl font-bold text-foreground">
+                    Document Intelligence
+                  </h3>
                   <p className="text-muted-foreground">
-                    Upload lease agreements, property documents, and tenant applications. Our AI analyzes them to provide key insights:
+                    Upload lease agreements, property documents, and tenant
+                    applications. Our AI analyzes them to provide key insights:
                   </p>
                   <ul className="space-y-2 mt-4">
                     <li className="flex items-start gap-3">
                       <span className="text-ai mt-1">✓</span>
-                      <span className="text-sm">Lease term analysis and red flags</span>
+                      <span className="text-sm">
+                        Lease term analysis and red flags
+                      </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-ai mt-1">✓</span>
-                      <span className="text-sm">Property valuation insights</span>
+                      <span className="text-sm">
+                        Property valuation insights
+                      </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-ai mt-1">✓</span>
@@ -171,7 +194,9 @@ export default function Index() {
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-ai mt-1">✓</span>
-                      <span className="text-sm">Market analysis recommendations</span>
+                      <span className="text-sm">
+                        Market analysis recommendations
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -183,12 +208,11 @@ export default function Index() {
                 AI-Powered Insights for Better Decisions
               </h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                PropertyFlow uses advanced AI to analyze your documents and provide actionable insights. Review leases, understand property metrics, and make data-driven decisions faster.
+                PropertyFlow uses advanced AI to analyze your documents and
+                provide actionable insights. Review leases, understand property
+                metrics, and make data-driven decisions faster.
               </p>
-              <Button 
-                size="lg"
-                className="bg-primary hover:bg-primary/90"
-              >
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
                 Learn More About AI Features
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -204,10 +228,11 @@ export default function Index() {
             Ready to Transform Your Property Management?
           </h2>
           <p className="text-xl text-muted-foreground mb-12">
-            Join hundreds of landlords managing their properties smarter with PropertyFlow.
+            Join hundreds of landlords managing their properties smarter with
+            PropertyFlow.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
+            <Button
               size="lg"
               onClick={() => handleDemoLogin("landlord")}
               className="bg-primary hover:bg-primary/90"
@@ -215,7 +240,7 @@ export default function Index() {
               Get Started as a Landlord
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            <Button 
+            <Button
               size="lg"
               variant="outline"
               onClick={() => handleDemoLogin("tenant")}

@@ -39,9 +39,7 @@ export function TenantCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="font-semibold text-foreground text-lg mb-1">
-            {name}
-          </h3>
+          <h3 className="font-semibold text-foreground text-lg mb-1">{name}</h3>
           <p className="text-sm text-muted-foreground">
             {property} - Unit {unit}
           </p>
@@ -79,27 +77,22 @@ export function TenantCard({
 
       {/* Actions */}
       <div className="flex gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="flex-1"
-          onClick={onView}
-        >
+        <Button variant="outline" size="sm" className="flex-1" onClick={onView}>
           <FileText className="w-4 h-4 mr-1" />
           Details
         </Button>
         {status === "pending" && (
           <>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="flex-1 bg-green-600 hover:bg-green-700"
               onClick={onApprove}
             >
               Approve
             </Button>
-            <Button 
+            <Button
               variant="destructive"
-              size="sm" 
+              size="sm"
               className="flex-1"
               onClick={onReject}
             >

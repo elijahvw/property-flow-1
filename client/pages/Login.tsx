@@ -35,7 +35,9 @@ export default function Login() {
             <div className="mb-8">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-gradient-ai rounded-lg"></div>
-                <span className="text-xl font-bold text-primary">PropertyFlow</span>
+                <span className="text-xl font-bold text-primary">
+                  PropertyFlow
+                </span>
               </div>
               <h1 className="text-2xl font-bold text-foreground text-center mb-2">
                 Welcome Back
@@ -75,7 +77,10 @@ export default function Login() {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Email
                 </label>
                 <div className="relative">
@@ -94,7 +99,10 @@ export default function Login() {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">

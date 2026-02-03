@@ -115,9 +115,7 @@ export default function AdminPayments() {
           <div className="rounded-lg border border-border bg-white p-6">
             <div className="flex items-center gap-3 mb-2">
               <DollarSign className="w-5 h-5 text-green-600" />
-              <p className="text-sm font-medium text-muted-foreground">
-                Paid
-              </p>
+              <p className="text-sm font-medium text-muted-foreground">Paid</p>
             </div>
             <p className="text-3xl font-bold text-green-600">
               ${paidAmount.toLocaleString()}

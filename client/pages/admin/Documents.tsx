@@ -99,8 +99,7 @@ export default function AdminDocuments() {
         },
         {
           label: "Recommendation",
-          value:
-            "Request additional income verification before approval",
+          value: "Request additional income verification before approval",
           type: "negative",
         },
       ],
@@ -156,14 +155,12 @@ export default function AdminDocuments() {
                 Drop files here or click to upload
               </p>
               <p className="text-sm text-muted-foreground">
-                Upload lease agreements, property documents, or tenant applications
+                Upload lease agreements, property documents, or tenant
+                applications
               </p>
             </div>
             <div className="flex gap-2 flex-wrap justify-center">
-              <Button
-                variant="outline"
-                className="gap-2"
-              >
+              <Button variant="outline" className="gap-2">
                 <Plus className="w-4 h-4" />
                 Choose Files
               </Button>
@@ -199,7 +196,9 @@ export default function AdminDocuments() {
                 <FileText className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-foreground">Property Appraisal</p>
+                <p className="font-medium text-foreground">
+                  Property Appraisal
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Uploaded 5 days ago
                 </p>
@@ -214,7 +213,9 @@ export default function AdminDocuments() {
                 <FileText className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-foreground">Tenant Application</p>
+                <p className="font-medium text-foreground">
+                  Tenant Application
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Uploaded 1 week ago
                 </p>

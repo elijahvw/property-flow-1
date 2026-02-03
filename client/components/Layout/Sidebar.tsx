@@ -43,7 +43,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
     <>
       {/* Mobile overlay */}
       {!isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 md:hidden z-40"
           onClick={onClose}
         />
@@ -53,13 +53,13 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       <aside
         className={cn(
           "fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 border-r border-border bg-sidebar transition-transform duration-200 ease-in-out md:relative md:top-0 md:h-full md:translate-x-0 z-40",
-          !isOpen && "-translate-x-full md:translate-x-0"
+          !isOpen && "-translate-x-full md:translate-x-0",
         )}
       >
         <div className="flex flex-col h-full">
           {/* Close button on mobile */}
           <div className="md:hidden p-4 border-b border-border">
-            <button 
+            <button
               onClick={onClose}
               className="p-2 hover:bg-sidebar-accent rounded-lg transition"
             >
@@ -80,7 +80,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                     "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition",
                     isActive
                       ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent",
                   )}
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />

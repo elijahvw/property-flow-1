@@ -78,26 +78,24 @@ export function PropertyCard({
             <p className="text-xs text-muted-foreground mb-1">Revenue</p>
             <div className="flex items-center gap-1">
               <DollarSign className="w-4 h-4 text-ai" />
-              <p className="font-semibold text-foreground">{monthlyRent / 1000}k</p>
+              <p className="font-semibold text-foreground">
+                {monthlyRent / 1000}k
+              </p>
             </div>
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="flex-1"
             onClick={onView}
           >
             View
           </Button>
-          <Button 
-            size="sm" 
-            className="flex-1"
-            onClick={onEdit}
-          >
+          <Button size="sm" className="flex-1" onClick={onEdit}>
             Edit
           </Button>
         </div>

@@ -18,24 +18,19 @@ export function Layout({ children, showSidebar = false }: LayoutProps) {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <Header 
+      <Header
         onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
         showSidebarToggle={shouldShowSidebar}
       />
-      
+
       <div className="flex flex-1 overflow-hidden">
         {shouldShowSidebar && (
-          <Sidebar 
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-          />
+          <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         )}
-        
+
         <main className="flex-1 overflow-y-auto">
           <div className="flex flex-col min-h-full">
-            <div className="flex-1">
-              {children}
-            </div>
+            <div className="flex-1">{children}</div>
             <Footer />
           </div>
         </main>

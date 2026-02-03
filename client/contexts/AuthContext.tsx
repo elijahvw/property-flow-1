@@ -23,7 +23,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const login = (email: string, password: string, role: "landlord" | "tenant") => {
+  const login = (
+    email: string,
+    password: string,
+    role: "landlord" | "tenant",
+  ) => {
     // Mock authentication - in production, this would validate against a real backend
     const newUser: User = {
       id: `user_${Date.now()}`,
@@ -41,7 +45,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, isAuthenticated: !!user }}
+    >
       {children}
     </AuthContext.Provider>
   );

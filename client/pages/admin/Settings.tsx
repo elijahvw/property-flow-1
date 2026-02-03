@@ -147,11 +147,7 @@ export default function AdminSettings() {
             >
               Logout
             </Button>
-            <Button
-              variant="destructive"
-              disabled
-              title="Coming soon"
-            >
+            <Button variant="destructive" disabled title="Coming soon">
               Delete Account
             </Button>
           </div>

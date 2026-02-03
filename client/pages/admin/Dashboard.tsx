@@ -6,7 +6,14 @@ import { Button } from "@/components/ui/button";
 import { StatsCard } from "@/components/Cards/StatsCard";
 import { PropertyCard } from "@/components/Cards/PropertyCard";
 import { TenantCard } from "@/components/Cards/TenantCard";
-import { Building2, Users, DollarSign, ClipboardList, Plus, ArrowRight } from "lucide-react";
+import {
+  Building2,
+  Users,
+  DollarSign,
+  ClipboardList,
+  Plus,
+  ArrowRight,
+} from "lucide-react";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -123,7 +130,9 @@ export default function AdminDashboard() {
         {/* Properties Section */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-foreground">Your Properties</h2>
+            <h2 className="text-2xl font-bold text-foreground">
+              Your Properties
+            </h2>
             <Button
               onClick={() => navigate("/admin/properties")}
               className="gap-2"
@@ -157,7 +166,9 @@ export default function AdminDashboard() {
         {/* Tenants Section */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-foreground">Recent Tenants</h2>
+            <h2 className="text-2xl font-bold text-foreground">
+              Recent Tenants
+            </h2>
             <Button
               variant="outline"
               onClick={() => navigate("/admin/tenants")}
@@ -186,7 +197,9 @@ export default function AdminDashboard() {
             Unlock AI-Powered Insights
           </h2>
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Upload your lease documents and property files to get AI-powered analysis and recommendations. Discover opportunities and mitigate risks.
+            Upload your lease documents and property files to get AI-powered
+            analysis and recommendations. Discover opportunities and mitigate
+            risks.
           </p>
           <Button
             onClick={() => navigate("/admin/documents")}

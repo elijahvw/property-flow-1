@@ -50,7 +50,9 @@ export default function Signup() {
             <div className="mb-8">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-gradient-ai rounded-lg"></div>
-                <span className="text-xl font-bold text-primary">PropertyFlow</span>
+                <span className="text-xl font-bold text-primary">
+                  PropertyFlow
+                </span>
               </div>
               <h1 className="text-2xl font-bold text-foreground text-center mb-2">
                 Create Account
@@ -90,7 +92,10 @@ export default function Signup() {
 
               {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Full Name
                 </label>
                 <div className="relative">
@@ -109,7 +114,10 @@ export default function Signup() {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Email
                 </label>
                 <div className="relative">
@@ -128,7 +136,10 @@ export default function Signup() {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -147,7 +158,10 @@ export default function Signup() {
 
               {/* Confirm Password */}
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -212,7 +226,8 @@ export default function Signup() {
 
           {/* Footer Text */}
           <p className="text-center text-xs text-muted-foreground mt-6">
-            This is a demo platform. Use demo credentials or create a test account to explore.
+            This is a demo platform. Use demo credentials or create a test
+            account to explore.
           </p>
         </div>
       </div>
