@@ -9,6 +9,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProperties from "./pages/admin/Properties";
 import AdminTenants from "./pages/admin/Tenants";
@@ -27,6 +29,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/properties" element={<AdminProperties />} />
             <Route path="/admin/tenants" element={<AdminTenants />} />
