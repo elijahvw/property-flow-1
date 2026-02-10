@@ -1,4 +1,4 @@
-# PropertyFlow - AWS Deployment Guide
+# PropertyFlow - Complete Setup & Deployment Guide
 
 ## Architecture
 
@@ -20,166 +20,274 @@
                     └─────────────┘
 ```
 
-## Prerequisites
+---
 
-1. **AWS CLI** configured with credentials: `aws configure`
-2. **Terraform** >= 1.0: https://www.terraform.io/downloads
-3. **Node.js** >= 22 and **pnpm**
-4. **Auth0 account** with application configured
+## Step 1: Install Prerequisites on Your Mac
+
+You need 4 tools installed. Open Terminal and run each one:
+
+### 1a. Node.js (v22+)
+
+```bash
+# Check if already installed
+node -v
+
+# If not installed or below v20, install via Homebrew:
+brew install node@22
+```
+
+If you don't have Homebrew: https://brew.sh
+
+### 1b. pnpm (package manager)
+
+```bash
+# Install pnpm globally
+npm install -g pnpm
+
+# Verify
+pnpm -v
+```
+
+### 1c. Terraform
+
+```bash
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+
+# Verify
+terraform -v
+```
+
+### 1d. AWS CLI
+
+```bash
+brew install awscli
+
+# Verify
+aws --version
+```
+
+### 1e. Configure AWS Credentials
+
+```bash
+aws configure
+```
+
+Enter your AWS Access Key ID, Secret Access Key, region (`us-east-1`), and output format (`json`).
+
+If you don't have AWS credentials yet:
+1. Go to AWS Console → IAM → Users → Create User
+2. Attach `AdministratorAccess` policy (for initial setup)
+3. Create access key under Security Credentials tab
 
 ---
 
-## Step 1: Auth0 Setup (Manual)
+## Step 2: Clone & Install the Project
 
-### Create an Auth0 Application
+```bash
+# Clone from GitHub
+git clone https://github.com/elijahvw/property-flow-1.git
+cd property-flow-1
 
-1. Go to your Auth0 Dashboard: https://manage.auth0.com
+# Install all dependencies (THIS IS REQUIRED before anything else works)
+pnpm install
+```
+
+**This is the step you were missing** — `pnpm install` downloads all the libraries the project needs. Without it, commands like `pnpm test` or `pnpm dev` will fail.
+
+### Verify It Works
+
+```bash
+# Run tests to make sure everything is good
+pnpm test
+
+# (Optional) Run locally for development
+pnpm dev
+# Then open http://localhost:5000
+```
+
+---
+
+## Step 3: Auth0 Setup
+
+Your Auth0 app is already created. You just need to update the callback URLs after deployment.
+
+**Your Auth0 Settings:**
+- **Domain**: `dev-p1y78gnnq2o2fssw.us.auth0.com`
+- **Client ID**: `3PZ5sdaGiNxfmIlwSPnk4eh9uAPiIxDR`
+- **API Audience**: `https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/`
+
+### If Setting Up Auth0 from Scratch
+
+1. Go to https://manage.auth0.com
 2. Navigate to **Applications > Applications > Create Application**
 3. Choose **Single Page Application**
 4. In the **Settings** tab, configure:
 
 | Setting | Value |
 |---------|-------|
-| **Allowed Callback URLs** | `https://<your-cloudfront-url>/dashboard, http://localhost:5000/dashboard` |
-| **Allowed Logout URLs** | `https://<your-cloudfront-url>, http://localhost:5000` |
-| **Allowed Web Origins** | `https://<your-cloudfront-url>, http://localhost:5000` |
+| **Allowed Callback URLs** | `http://localhost:5000/dashboard` |
+| **Allowed Logout URLs** | `http://localhost:5000` |
+| **Allowed Web Origins** | `http://localhost:5000` |
 
-> Note: You'll get the CloudFront URL after running `terraform apply`. Come back and update these URLs.
+5. Navigate to **Applications > APIs > Create API**
+6. Set the **Identifier** (audience) — this will be your `auth0_audience`
 
-### Create an Auth0 API
-
-1. Navigate to **Applications > APIs > Create API**
-2. Set the **Identifier** (audience) to match your `auth0_audience` variable
-3. Enable **RBAC** if you want Auth0 to manage roles
-
-### Note Your Settings
-
-- **Domain**: `dev-p1y78gnnq2o2fssw.us.auth0.com`
-- **Client ID**: `3PZ5sdaGiNxfmIlwSPnk4eh9uAPiIxDR`
-- **API Audience**: `https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/`
+You'll add the production CloudFront URL to these settings later (after Step 5).
 
 ---
 
-## Step 2: Configure Terraform Variables
+## Step 4: Configure Terraform Variables
 
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edit `terraform.tfvars` with your values:
+Edit `terraform.tfvars` with a text editor:
 
 ```hcl
 aws_region      = "us-east-1"
 project_name    = "property-flow"
-db_password     = "your-strong-database-password"
-jwt_secret      = "your-random-jwt-secret"
+db_password     = "PICK-A-STRONG-PASSWORD-HERE"
+jwt_secret      = "PICK-A-RANDOM-STRING-HERE"
 auth0_domain    = "dev-p1y78gnnq2o2fssw.us.auth0.com"
 auth0_audience  = "https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/"
 auth0_client_id = "3PZ5sdaGiNxfmIlwSPnk4eh9uAPiIxDR"
 ```
 
+Go back to the project root:
+```bash
+cd ..
+```
+
 ---
 
-## Step 3: Deploy
-
-### Option A: Automated (Recommended)
+## Step 5: Deploy to AWS
 
 ```bash
-# Set Auth0 vars for frontend build
+# Set Auth0 variables for the frontend build
 export VITE_AUTH0_DOMAIN="dev-p1y78gnnq2o2fssw.us.auth0.com"
 export VITE_AUTH0_CLIENT_ID="3PZ5sdaGiNxfmIlwSPnk4eh9uAPiIxDR"
 export VITE_AUTH0_AUDIENCE="https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/"
 
+# Run the deploy script
 ./scripts/deploy.sh
 ```
 
-### Option B: Manual Step-by-Step
+The script will:
+1. Install dependencies (if needed)
+2. Run tests
+3. Build the Lambda backend
+4. Create all AWS infrastructure (VPC, RDS, Lambda, CloudFront, etc.)
+5. Build the frontend
+6. Upload frontend to S3
 
-```bash
-# 1. Run tests
-pnpm test
+It will ask you to confirm before creating AWS resources.
 
-# 2. Build Lambda
-pnpm run build:lambda
-
-# 3. Init & apply Terraform
-cd terraform
-terraform init
-terraform plan
-terraform apply
-
-# 4. Get outputs
-API_URL=$(terraform output -raw api_url)
-BUCKET=$(terraform output -raw frontend_bucket_name)
-CF_ID=$(terraform output -raw cloudfront_distribution_id)
-
-# 5. Build frontend with API URL
-cd ..
-VITE_API_URL=$API_URL \
-VITE_AUTH0_DOMAIN="dev-p1y78gnnq2o2fssw.us.auth0.com" \
-VITE_AUTH0_CLIENT_ID="3PZ5sdaGiNxfmIlwSPnk4eh9uAPiIxDR" \
-VITE_AUTH0_AUDIENCE="https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/" \
-pnpm run build:client
-
-# 6. Upload to S3
-aws s3 sync dist/spa/ s3://$BUCKET --delete
-
-# 7. Invalidate CloudFront cache
-aws cloudfront create-invalidation --distribution-id $CF_ID --paths "/*"
-```
+At the end, it will print your **Frontend URL** (CloudFront) and **API URL**.
 
 ---
 
-## Step 4: Run Database Migrations
+## Step 6: Run Database Migrations
 
-After Terraform creates the RDS instance, run migrations:
+After Terraform creates the RDS database, you need to set up the tables. 
+
+**Note:** RDS is in a private subnet (not accessible from the internet). You have two options:
+
+### Option A: Temporary public access (quick & easy for initial setup)
+
+Add a temporary security group rule in the AWS Console:
+1. Go to AWS Console → VPC → Security Groups
+2. Find the RDS security group (named `property-flow-rds-sg`)
+3. Add an inbound rule: PostgreSQL (5432) from your IP
+4. Run the migration:
 
 ```bash
-# Get the database endpoint from Terraform
+# Get the RDS endpoint
 cd terraform
 DB_ENDPOINT=$(terraform output -raw db_endpoint)
+cd ..
 
-# Run migrations (replace password)
-DATABASE_URL="postgresql://postgres:YOUR_DB_PASSWORD@$DB_ENDPOINT/propertyflow" pnpm migrate
+# Run migrations
+DATABASE_URL="postgresql://postgres:YOUR_DB_PASSWORD@$DB_ENDPOINT:5432/propertyflow" pnpm migrate
 ```
 
-> Note: RDS is in a private subnet. You'll need a bastion host, VPN, or SSM Session Manager to access it. Alternatively, add a temporary `aws_security_group_rule` for your IP.
+5. **Remove the temporary security group rule** after migrations complete
+
+### Option B: Use AWS Systems Manager (SSM) Session Manager
+
+This is more secure. Set up SSM on the Lambda or create a bastion instance.
 
 ---
 
-## Step 5: Update Auth0 Callback URLs
+## Step 7: Update Auth0 Callback URLs
 
-After deployment, go back to Auth0 and update:
+Go back to your Auth0 Dashboard and add the CloudFront URL:
 
-```
-Allowed Callback URLs:    https://<cloudfront-domain>/dashboard
-Allowed Logout URLs:      https://<cloudfront-domain>
-Allowed Web Origins:      https://<cloudfront-domain>
-```
+1. **Applications > Applications** → select your app
+2. Add to **Allowed Callback URLs**: `https://<cloudfront-domain>/dashboard`
+3. Add to **Allowed Logout URLs**: `https://<cloudfront-domain>`
+4. Add to **Allowed Web Origins**: `https://<cloudfront-domain>`
+5. Click **Save Changes**
 
-The CloudFront domain is shown in the deployment output.
+The CloudFront domain was printed at the end of the deploy script.
 
 ---
 
-## Updating the Application
+## Pushing Changes from Replit to GitHub
 
-After code changes:
+Changes made in Replit are saved locally but don't automatically go to GitHub. To sync:
 
+### From Replit Shell:
 ```bash
-# Backend changes only
+git push origin main
+```
+
+If prompted for credentials, use a GitHub Personal Access Token:
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+2. Generate new token with `repo` scope
+3. Use your GitHub username and the token as the password
+
+### From Your Mac (after pulling):
+```bash
+cd property-flow-1
+git pull origin main
+```
+
+---
+
+## Updating the Application After Changes
+
+### Backend changes only:
+```bash
 pnpm run build:lambda
 cd terraform && terraform apply
-# Lambda will auto-deploy with new code
+```
 
-# Frontend changes only
+### Frontend changes only:
+```bash
 VITE_API_URL="<api-url>" pnpm run build:client
 aws s3 sync dist/spa/ s3://<bucket> --delete
 aws cloudfront create-invalidation --distribution-id <cf-id> --paths "/*"
+```
 
-# Both
+### Both (easiest):
+```bash
 ./scripts/deploy.sh
 ```
+
+---
+
+## Running Locally for Development
+
+```bash
+cd property-flow-1
+pnpm install          # Only needed once (or after package.json changes)
+pnpm dev              # Starts dev server at http://localhost:5000
+```
+
+For local Auth0 login to work, make sure `http://localhost:5000` is in your Auth0 Allowed Callback/Logout/Origins URLs.
 
 ---
 
@@ -195,11 +303,14 @@ aws cloudfront create-invalidation --distribution-id <cf-id> --paths "/*"
 | CloudFront | Free tier (1TB/mo) |
 | **Total** | **~$45-60/mo** |
 
-> Tip: To reduce costs, you can remove the NAT Gateway and run Lambda outside VPC (requires making RDS publicly accessible with security group restrictions).
+> Tip: To reduce costs, remove the NAT Gateway and run Lambda outside VPC (requires making RDS publicly accessible with security group restrictions).
 
 ---
 
 ## Troubleshooting
+
+**"command not found" errors when running scripts**
+- Run `pnpm install` first — this installs all project dependencies
 
 **Lambda can't reach RDS**
 - Verify Lambda and RDS are in the same VPC
@@ -215,3 +326,7 @@ aws cloudfront create-invalidation --distribution-id <cf-id> --paths "/*"
 - Check S3 bucket policy allows CloudFront OAI
 - Verify `index.html` exists in S3 bucket
 - Check custom error responses are configured for SPA routing
+
+**Changes not showing in GitHub**
+- Replit doesn't auto-push to GitHub
+- Run `git push origin main` from the Replit Shell
