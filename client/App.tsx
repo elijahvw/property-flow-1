@@ -9,13 +9,14 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProperties from "./pages/admin/Properties";
 import AdminTenants from "./pages/admin/Tenants";
 import AdminPayments from "./pages/admin/Payments";
 import AdminDocuments from "./pages/admin/Documents";
 import AdminSettings from "./pages/admin/Settings";
+import CompleteRegistration from "./pages/CompleteRegistration";
+import AdminPlatform from "./pages/AdminPlatform";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,8 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/complete-registration" element={<CompleteRegistration />} />
+              <Route path="/platform-admin" element={<AdminPlatform />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/properties" element={<AdminProperties />} />
               <Route path="/admin/tenants" element={<AdminTenants />} />

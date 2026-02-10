@@ -7,18 +7,18 @@ import { ArrowRight, Zap, Shield, BarChart3, Brain } from "lucide-react";
 
 export default function Index() {
   const navigate = useNavigate();
-  const { user, login } = useAuth();
+  const { user } = useAuth();
 
-  // Redirect authenticated landlords to admin dashboard
+  // Redirect authenticated users to their respective dashboards
   useEffect(() => {
-    if (user && user.role === "landlord") {
-      navigate("/admin");
+    if (user) {
+      if (user.role === "admin") {
+        navigate("/platform-admin");
+      } else if (user.role === "landlord") {
+        navigate("/admin");
+      }
     }
   }, [user, navigate]);
-
-  const handleDemoLogin = (role: "landlord" | "tenant") => {
-    login(`demo.${role}@propertyflow.com`, "demo", role);
-  };
 
   return (
     <Layout>
@@ -45,25 +45,13 @@ export default function Index() {
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
                 <Button
                   size="lg"
-                  onClick={() => handleDemoLogin("landlord")}
+                  onClick={() => navigate("/login")}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  I'm a Landlord
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={() => handleDemoLogin("tenant")}
-                >
-                  I'm a Tenant
+                  Get Started
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
-
-              <p className="text-sm text-muted-foreground">
-                🎉 Click above to enter demo mode and explore the platform
-              </p>
             </div>
 
             <div className="hidden md:block">
@@ -234,18 +222,11 @@ export default function Index() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              onClick={() => handleDemoLogin("landlord")}
+              onClick={() => navigate("/login")}
               className="bg-primary hover:bg-primary/90"
             >
-              Get Started as a Landlord
+              Get Started Now
               <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => handleDemoLogin("tenant")}
-            >
-              Explore as a Tenant
             </Button>
           </div>
         </div>

@@ -157,24 +157,12 @@ export default function Login() {
               variant="outline"
               className="w-full"
               onClick={() => {
-                login(`demo.${role}@propertyflow.com`, "demo", role);
-                navigate(role === "landlord" ? "/admin" : "/");
+                login("admin@propertyflow.com", "admin");
+                navigate("/platform-admin");
               }}
             >
-              Try Demo Account
+              Platform Admin Demo
             </Button>
-
-            {/* Sign Up Link */}
-            <p className="text-center text-sm text-muted-foreground mt-6">
-              Don't have an account?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/signup")}
-                className="text-primary hover:underline font-medium"
-              >
-                Sign up
-              </button>
-            </p>
           </div>
 
           {/* Footer Text */}

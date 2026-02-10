@@ -6,9 +6,11 @@ import {
   CreditCard,
   FileText,
   Settings,
+  Shield,
   X,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -19,9 +21,11 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+  adminOnly?: boolean;
 }
 
 const adminNavItems: NavItem[] = [
+  { label: "Platform Admin", href: "/platform-admin", icon: Shield, adminOnly: true },
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Properties", href: "/admin/properties", icon: Building2 },
   { label: "Tenants", href: "/admin/tenants", icon: Users },
@@ -33,11 +37,16 @@ const adminNavItems: NavItem[] = [
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleNavigation = (href: string) => {
     navigate(href);
     onClose?.();
   };
+
+  const visibleNavItems = adminNavItems.filter(item => 
+    !item.adminOnly || (item.adminOnly && user?.role === "admin")
+  );
 
   return (
     <>
@@ -69,7 +78,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-            {adminNavItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const isActive = location.pathname === item.href;
               const Icon = item.icon;
               return (
