@@ -1,59 +1,50 @@
 export interface User {
   id: string;
-  name: string;
+  auth0Sub: string;
   email: string;
-  role: "landlord" | "tenant" | "guest";
-  companyId?: string;
+  name: string;
+  avatarUrl?: string;
 }
 
 export interface Company {
   id: string;
   name: string;
+  created_at: string;
 }
 
-export interface Property {
-  id: string;
-  companyId: string;
-  name: string;
-  address: string;
-  type: string;
-  units: number;
-  monthlyRent: number;
-  status: "active" | "vacant" | "maintenance";
+export interface CompanyMembership {
+  company_id: string;
+  company_name: string;
+  role: "owner" | "staff" | "tenant";
+  status: "active" | "invited" | "disabled";
 }
 
-export interface Tenant {
+export interface CompanyMember {
   id: string;
-  propertyId: string;
-  name: string;
   email: string;
-  phone: string;
-  status: "active" | "pending" | "inactive";
-  leaseEndDate?: string;
-}
-
-export interface Payment {
-  id: string;
-  tenantId: string;
-  amount: number;
-  dueDate: string;
-  paidDate?: string;
-  status: "paid" | "pending" | "overdue";
-}
-
-export interface Document {
-  id: string;
-  propertyId?: string;
-  tenantId?: string;
   name: string;
-  url: string;
-  type: string;
-  aiAnalysis?: string;
+  avatar_url?: string;
+  role: "owner" | "staff" | "tenant";
+  status: "active" | "invited" | "disabled";
+  created_at: string;
 }
 
-export interface AuthResponse {
-  user: User;
+export interface Invite {
+  id: string;
+  company_id: string;
+  email: string;
+  role: "staff" | "tenant";
   token: string;
+  status: "pending" | "accepted" | "expired" | "revoked";
+  expires_at: string;
+  created_by: string;
+  created_by_name?: string;
+  created_at: string;
+}
+
+export interface AuthMeResponse {
+  user: User;
+  memberships: CompanyMembership[];
 }
 
 export interface ApiResponse<T> {

@@ -1,66 +1,91 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { apiClient } from "@/lib/api";
+import type { AuthMeResponse, CompanyMembership } from "@shared/api";
 
-export interface User {
+export interface AuthUser {
   id: string;
-  name: string;
+  auth0Sub: string;
   email: string;
-  role: "landlord" | "tenant" | "guest" | "admin";
-  companyId?: string;
+  name: string;
 }
 
 interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  user: AuthUser | null;
+  memberships: CompanyMembership[];
+  currentCompanyId: string | null;
+  currentRole: string | null;
+  isLoading: boolean;
   isAuthenticated: boolean;
+  login: () => void;
+  logout: () => void;
+  getToken: () => Promise<string>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("propertyflow_user");
+  const {
+    isAuthenticated: auth0IsAuthenticated,
+    isLoading: auth0IsLoading,
+    user: auth0User,
+    loginWithRedirect,
+    logout: auth0Logout,
+    getAccessTokenSilently,
+  } = useAuth0();
+
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [memberships, setMemberships] = useState<CompanyMembership[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getToken = useCallback(async () => {
+    return getAccessTokenSilently();
+  }, [getAccessTokenSilently]);
+
+  const refreshProfile = useCallback(async () => {
     try {
-      return stored ? JSON.parse(stored) : null;
-    } catch (e) {
-      return null;
+      const token = await getToken();
+      const data = await apiClient<AuthMeResponse>("/auth/me", {
+        method: "POST",
+        token,
+      });
+      setUser(data.user);
+      setMemberships(data.memberships);
+    } catch (err) {
+      console.error("Failed to load profile:", err);
     }
-  });
+  }, [getToken]);
 
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("propertyflow_token");
-  });
+  useEffect(() => {
+    if (auth0IsLoading) return;
 
-  const login = async (email: string, password: string) => {
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Login failed");
+    if (!auth0IsAuthenticated) {
+      setUser(null);
+      setMemberships([]);
+      setIsLoading(false);
+      return;
     }
 
-    const data = await response.json();
-    setUser(data.user);
-    setToken(data.token);
-    localStorage.setItem("propertyflow_user", JSON.stringify(data.user));
-    localStorage.setItem("propertyflow_token", data.token);
-  };
+    refreshProfile().finally(() => setIsLoading(false));
+  }, [auth0IsAuthenticated, auth0IsLoading, refreshProfile]);
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("propertyflow_user");
-    localStorage.removeItem("propertyflow_token");
-  };
+  const activeMembership = memberships.find((m) => m.status === "active");
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, isAuthenticated: !!user }}
+      value={{
+        user,
+        memberships,
+        currentCompanyId: activeMembership?.company_id || null,
+        currentRole: activeMembership?.role || null,
+        isLoading: auth0IsLoading || isLoading,
+        isAuthenticated: auth0IsAuthenticated && !!user,
+        login: () => loginWithRedirect(),
+        logout: () => auth0Logout({ logoutParams: { returnTo: window.location.origin } }),
+        getToken,
+        refreshProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>

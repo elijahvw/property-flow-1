@@ -1,36 +1,27 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { initDb } from "./db";
-import authRoutes from "./routes/auth";
-import propertyRoutes from "./routes/properties";
-import tenantRoutes from "./routes/tenants";
+import authRoutes from "./routes/auth.js";
+import companyRoutes from "./routes/companies.js";
+import inviteRoutes from "./routes/invites.js";
 
 export function createServer() {
   const app = express();
 
-  // Middleware
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Initialize DB route (for convenience in MVP)
-  app.post("/api/init-db", async (_req, res) => {
-    try {
-      await initDb();
-      res.json({ message: "Database initialized successfully" });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // API routes
   app.use("/api/auth", authRoutes);
-  app.use("/api/properties", propertyRoutes);
-  app.use("/api/tenants", tenantRoutes);
+  app.use("/api/companies", companyRoutes);
+  app.use("/api/invites", inviteRoutes);
 
   app.get("/api/ping", (_req, res) => {
     res.json({ message: "pong" });
+  });
+
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
   return app;

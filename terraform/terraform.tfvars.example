@@ -1,0 +1,7 @@
+aws_region      = "us-east-1"
+project_name    = "property-flow"
+db_password     = "CHANGE_ME_strong_password_here"
+jwt_secret      = "CHANGE_ME_random_secret_key"
+auth0_domain    = "dev-p1y78gnnq2o2fssw.us.auth0.com"
+auth0_audience  = "https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/"
+auth0_client_id = "3PZ5sdaGiNxfmIlwSPnk4eh9uAPiIxDR"

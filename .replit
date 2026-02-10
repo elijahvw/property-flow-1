@@ -1,4 +1,4 @@
-modules = ["web", "nodejs-22"]
+modules = ["web", "nodejs-22", "postgresql-16"]
 [agent]
 expertMode = true
 
@@ -10,6 +10,11 @@ channel = "stable-25_05"
 [userenv.shared]
 JWT_SECRET = "replit_jwt_secret_key_2026_secure"
 VITE_API_URL = "/api"
+VITE_AUTH0_DOMAIN = "dev-p1y78gnnq2o2fssw.us.auth0.com"
+VITE_AUTH0_CLIENT_ID = "3PZ5sdaGiNxfmIlwSPnk4eh9uAPiIxDR"
+VITE_AUTH0_AUDIENCE = "https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/"
+AUTH0_DOMAIN = "dev-p1y78gnnq2o2fssw.us.auth0.com"
+AUTH0_AUDIENCE = "https://dev-p1y78gnnq2o2fssw.us.auth0.com/api/v2/"
 
 [workflows]
 runButton = "Project"

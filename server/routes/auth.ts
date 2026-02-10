@@ -1,126 +1,99 @@
 import { Response, Router } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { query } from "../db";
-import crypto from "crypto";
-import { authenticateToken, AuthRequest, authorizeRoles } from "../middleware/auth";
+import { query } from "../db/index.js";
+import { authenticateToken, AuthRequest, requireUser } from "../middleware/auth.js";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
-// ADMIN ONLY: Invite Landlord
-export const inviteLandlord = async (req: AuthRequest, res: Response) => {
-  const { name, email, companyName } = req.body;
+router.post("/me", authenticateToken, async (req: AuthRequest, res: Response) => {
+  if (req.user?.id) {
+    const memberships = await query(
+      `SELECT cu.role, cu.status, c.id as company_id, c.name as company_name
+       FROM company_users cu
+       JOIN companies c ON cu.company_id = c.id
+       WHERE cu.user_id = $1 AND cu.status = 'active'`,
+      [req.user.id]
+    );
+
+    return res.json({
+      user: req.user,
+      memberships: memberships.rows,
+    });
+  }
+
+  const auth0Sub = (req as any).auth0Sub;
+  const auth0Email = (req as any).auth0Email;
+  const auth0Name = (req as any).auth0Name;
+
+  if (!auth0Sub) {
+    return res.status(401).json({ error: "Authentication failed." });
+  }
 
   try {
-    const registrationToken = crypto.randomUUID();
-    
-    // 1. Create company
-    const companyRes = await query(
-      "INSERT INTO companies (name) VALUES ($1) RETURNING id",
-      [companyName || `${name}'s Company`]
-    );
-    const companyId = companyRes.rows[0].id;
-
-    // 2. Create user as 'invited'
-    await query(
-      "INSERT INTO users (name, email, role, company_id, status, registration_token) VALUES ($1, $2, $3, $4, $5, $6)",
-      [name, email, "landlord", companyId, "invited", registrationToken]
+    const result = await query(
+      "INSERT INTO users (auth0_sub, email, name) VALUES ($1, $2, $3) RETURNING *",
+      [auth0Sub, auth0Email, auth0Name || auth0Email]
     );
 
-    // TODO: Send email with link: /complete-registration?token=${registrationToken}
-    console.log(`INVITE SENT to ${email}: /complete-registration?token=${registrationToken}`);
+    const newUser = result.rows[0];
 
-    res.status(201).json({ message: "Invitation sent", token: registrationToken });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const pendingInvites = await query(
+      "SELECT id, company_id, role FROM invites WHERE email = $1 AND status = 'pending' AND expires_at > NOW()",
+      [auth0Email]
+    );
 
-// LANDLORD ONLY: Invite Tenant
-export const inviteTenant = async (req: AuthRequest, res: Response) => {
-  const { name, email, propertyId } = req.body;
-  const companyId = req.user?.companyId;
-
-  try {
-    const registrationToken = crypto.randomUUID();
-    
-    // Verify landlord owns the property
-    const propertyRes = await query("SELECT company_id FROM properties WHERE id = $1 AND company_id = $2", [propertyId, companyId]);
-    if (propertyRes.rows.length === 0) {
-      return res.status(404).json({ error: "Property not found or access denied" });
+    for (const invite of pendingInvites.rows) {
+      await query(
+        "INSERT INTO company_users (company_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT (company_id, user_id) DO NOTHING",
+        [invite.company_id, newUser.id, invite.role]
+      );
+      await query(
+        "UPDATE invites SET status = 'accepted' WHERE id = $1",
+        [invite.id]
+      );
     }
 
-    // Create user as 'invited'
-    await query(
-      "INSERT INTO users (name, email, role, company_id, status, registration_token) VALUES ($1, $2, $3, $4, $5, $6)",
-      [name, email, "tenant", companyId, "invited", registrationToken]
+    const memberships = await query(
+      `SELECT cu.role, cu.status, c.id as company_id, c.name as company_name
+       FROM company_users cu
+       JOIN companies c ON cu.company_id = c.id
+       WHERE cu.user_id = $1 AND cu.status = 'active'`,
+      [newUser.id]
     );
 
-    // TODO: Send email with link: /complete-registration?token=${registrationToken}
-    console.log(`TENANT INVITE SENT to ${email}: /complete-registration?token=${registrationToken}`);
-
-    res.status(201).json({ message: "Invitation sent", token: registrationToken });
+    return res.json({
+      user: {
+        id: newUser.id,
+        auth0Sub: newUser.auth0_sub,
+        email: newUser.email,
+        name: newUser.name,
+      },
+      memberships: memberships.rows,
+    });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// USER: Complete Registration (Set Password)
-export const completeRegistration = async (req: AuthRequest, res: Response) => {
-  const { token, password } = req.body;
-
-  try {
-    const userRes = await query(
-      "SELECT id FROM users WHERE registration_token = $1 AND status = 'invited'",
-      [token]
-    );
-
-    if (userRes.rows.length === 0) {
-      return res.status(400).json({ error: "Invalid or expired token" });
+    if (error.code === "23505") {
+      const existing = await query("SELECT * FROM users WHERE auth0_sub = $1", [auth0Sub]);
+      if (existing.rows.length > 0) {
+        return res.json({ user: existing.rows[0], memberships: [] });
+      }
     }
-
-    const userId = userRes.rows[0].id;
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    await query(
-      "UPDATE users SET password_hash = $1, status = 'active', registration_token = NULL WHERE id = $2",
-      [passwordHash, userId]
-    );
-
-    res.json({ message: "Registration complete. You can now log in." });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Error creating user:", error);
+    return res.status(500).json({ error: "Failed to create user profile." });
   }
-};
+});
 
-export const handleLogin = async (req: AuthRequest, res: Response) => {
-  const { email, password } = req.body;
+router.get("/me", authenticateToken, requireUser, async (req: AuthRequest, res: Response) => {
+  const memberships = await query(
+    `SELECT cu.role, cu.status, c.id as company_id, c.name as company_name
+     FROM company_users cu
+     JOIN companies c ON cu.company_id = c.id
+     WHERE cu.user_id = $1`,
+    [req.user!.id]
+  );
 
-  try {
-    const userRes = await query("SELECT * FROM users WHERE email = $1 AND status = 'active'", [email]);
-    if (userRes.rows.length === 0) {
-      return res.status(401).json({ error: "Invalid credentials or account not activated" });
-    }
-
-    const user = userRes.rows[0];
-    const isMatch = await bcrypt.compare(password, user.password_hash);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    const token = jwt.sign({ id: user.id, role: user.role, companyId: user.company_id }, JWT_SECRET);
-    delete user.password_hash;
-
-    res.json({ user, token });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-router.post("/invite-landlord", authenticateToken, authorizeRoles("admin"), inviteLandlord);
-router.post("/invite-tenant", authenticateToken, authorizeRoles("landlord"), inviteTenant);
-router.post("/complete-registration", completeRegistration);
-router.post("/login", handleLogin);
+  res.json({
+    user: req.user,
+    memberships: memberships.rows,
+  });
+});
 
 export default router;
